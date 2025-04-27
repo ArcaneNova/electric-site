@@ -4,7 +4,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'electricity-site'
-        DOCKERHUB_CREDENTIALS = 'dockerhub'  // Credentials for DockerHub
     }
 
     stages {
