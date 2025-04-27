@@ -25,7 +25,7 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                sh 'docker run -d -p 3000:3000 --name nextjs-container my-nextjs-app'
+                sh 'docker run -d -p 3020:3000 --name nextjs-container my-nextjs-app'
             }
         }
     }
