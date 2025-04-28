@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  jenkins:
+    build: ./jenkins-docker  # ← Build from Dockerfile above
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb+srv://arshadnoor:RoPxZFUvm7YNYYbR@cluster0.oyi8v.mongodb.net/electricity_db?retryWrites=true&w=majority&appName=Cluster0
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+
+
+volumes:
+  mongo-data:
+  jenkins_home:
