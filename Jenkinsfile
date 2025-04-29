@@ -15,7 +15,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout from the correct repository and branch
-                git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main', clean: true
+                git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main'  // Removed the invalid 'clean' parameter
             }
         }
 
