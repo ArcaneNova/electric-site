@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins Credential ID
-        DOCKERHUB_USERNAME = 'arshadnoor585' // your DockerHub username
+        DOCKERHUB_USERNAME = 'arshadnoor585'
+        IMAGE_NAME = "${DOCKERHUB_USERNAME}/electric-frontend"
     }
 
     stages {
@@ -13,27 +14,30 @@ pipeline {
             }
         }
 
-        stage('Build Frontend Docker Image') {
+        stage('Install Dependencies & Build') {
             steps {
                 dir('frontend') {
-                    script {
-                        docker.build("${DOCKERHUB_USERNAME}/electric-frontend", "-f Dockerfile .")
-                    }
+                    sh 'npm install'
+                    sh 'npm run build'  // make sure you have `build` script in package.json
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Build Docker Image') {
             steps {
-                echo '🧪 Add unit tests here (Node.js/React)'
+                dir('frontend') {
+                    script {
+                        docker.build("${IMAGE_NAME}", "-f Dockerfile .")
+                    }
+                }
             }
         }
 
         stage('Push to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        docker.image("${DOCKERHUB_USERNAME}/electric-frontend").push('latest')
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        docker.image("${IMAGE_NAME}").push('latest')
                     }
                 }
             }
