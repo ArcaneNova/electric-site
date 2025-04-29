@@ -1,8 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'   // Node.js with npm
+            args '-u root:root'      // Optional: ensures permission access
+        }
+    }
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins Credential ID
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         DOCKERHUB_USERNAME = 'arshadnoor585'
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/electric-frontend"
     }
@@ -18,7 +23,7 @@ pipeline {
             steps {
                 dir('frontend') {
                     sh 'npm install'
-                    sh 'npm run build'  // make sure you have `build` script in package.json
+                    sh 'npm run build'
                 }
             }
         }
