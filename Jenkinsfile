@@ -1,57 +1,52 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-alpine'   // Node.js with npm
-            args '-u root:root'      // Optional: ensures permission access
-        }
-    }
+    agent any
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        DOCKERHUB_USERNAME = 'arshadnoor585'
-        IMAGE_NAME = "${DOCKERHUB_USERNAME}/electric-frontend"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/ArcaneNova/electric-site'
+                git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main'
             }
         }
 
-        stage('Install Dependencies & Build') {
+        stage('Install & Build in Docker') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                script {
+                    docker.image('node:18-alpine').inside {
+                        dir('frontend') {
+                            sh 'npm install'
+                            sh 'npm run build'
+                        }
+                    }
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                dir('frontend') {
-                    script {
-                        docker.build("${IMAGE_NAME}", "-f Dockerfile .")
-                    }
+                script {
+                    sh 'docker build -t arshadnoor585/electric-site:latest .'
                 }
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        docker.image("${IMAGE_NAME}").push('latest')
+                    withDockerRegistry(credentialsId: 'dockerhub-creds', url: '') {
+                        sh 'docker push arshadnoor585/electric-site:latest'
                     }
                 }
             }
         }
+    }
 
-        stage('Cleanup') {
-            steps {
-                cleanWs()
-            }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
