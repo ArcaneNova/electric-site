@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')  // Ensure Docker credentials are set in Jenkins
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                // Ensure to checkout from the correct repository and branch
+                // Checkout from the correct repository and branch
                 git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main', clean: true
             }
         }
@@ -22,10 +22,11 @@ pipeline {
         stage('Install & Build in Docker') {
             steps {
                 script {
+                    // Pulling the node image and running npm build steps inside
                     docker.image('node:18-alpine').inside {
-                        dir('frontend') {
-                            sh 'npm install'
-                            sh 'npm run build'
+                        dir('frontend') {  // Navigating to the frontend directory
+                            sh 'npm install'  // Installing dependencies
+                            sh 'npm run build'  // Building the frontend
                         }
                     }
                 }
@@ -35,6 +36,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Build the Docker image from the project root (make sure Dockerfile is in the root or adjust the context)
                     sh 'docker build -t arshadnoor585/electric-site:latest .'
                 }
             }
@@ -43,8 +45,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    // Login to Docker Hub with credentials
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+                        // Push the built image to Docker Hub
                         sh 'docker push arshadnoor585/electric-site:latest'
                     }
                 }
@@ -54,6 +58,7 @@ pipeline {
 
     post {
         always {
+            // Clean workspace after the pipeline run
             cleanWs()
         }
     }
