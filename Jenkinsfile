@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main'
+                // Checkout code with clean option
+                git url: 'https://github.com/ArcaneNova/electric-site', branch: 'main', clean: true
             }
         }
 
