@@ -1,9 +1,9 @@
 "use client";
-import { Inter } from 'next/font/google';
 import '../css/home.css';
 import { NextAuthProvider } from '../../providers/NextAuthProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+// Don't use Google Fonts during build to avoid certificate issues
+// const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className='overflow-x-hidden'>
-      <body className='overflow-hidden relative'>
+      <body className='overflow-hidden relative font-sans'>
         <NextAuthProvider>
           <main className='relative overflow-hidden'>
             {children}

@@ -4,7 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Fixed import path
 import prisma from "@/lib/prisma";
-import { Role } from "@prisma/client";
+
+// Define Role enum directly to avoid prisma client import issues
+enum Role {
+  ADMIN = "ADMIN",
+  SUPERVISOR = "SUPERVISOR",
+  AREA_MANAGER = "AREA_MANAGER",
+  USER = "USER"
+}
 
 export async function GET(req: NextRequest) {
   try {
