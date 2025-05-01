@@ -8,6 +8,8 @@ import Link from "next/link";
 
 const Profile = () => {
   const { data: session } = useSession();
+  // Cast user to any to allow access to custom properties
+  const user = session?.user as any;
 
   return (
     <DefaultLayout>
@@ -37,7 +39,7 @@ const Profile = () => {
           <div className="px-4 pb-6 text-center">
             <div className="relative z-30 mx-auto -mt-20 h-40 w-40 rounded-full bg-white p-2">
               <Image
-                src={session?.user?.image || "/images/user/user-01.png"}
+                src={user?.image || "/images/user/user-01.png"}
                 width={160}
                 height={160}
                 alt="Profile"
@@ -51,8 +53,8 @@ const Profile = () => {
             </div>
 
             <div className="mt-4">
-              <h3 className="mb-1.5 text-2xl font-semibold">{session?.user?.name || "User Name"}</h3>
-              <p className="font-medium">{session?.user?.role || "User Role"}</p>
+              <h3 className="mb-1.5 text-2xl font-semibold">{user?.name || "User Name"}</h3>
+              <p className="font-medium">{user?.role || "User Role"}</p>
 
               <div className="mx-auto mb-5 mt-4 grid max-w-md grid-cols-3 border py-2 shadow">
                 <div className="flex flex-col items-center border-r px-4">

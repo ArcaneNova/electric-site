@@ -1,3 +1,5 @@
+"use client";
+
 import ElectricityStats from "@/HomeComponents/Destination";
 import Features from "@/HomeComponents/Features";
 import Hero from "@/HomeComponents/Hero";

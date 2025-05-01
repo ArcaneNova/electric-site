@@ -139,7 +139,7 @@ function BiWeeklyMultiModel() {
           let dailyTotal = 0;
 
           for (let hour = 0; hour < 24; hour++) {
-            const hourWeather = weatherData.find(w => w.hour === hour) || weatherData[0];
+            const hourWeather = weatherData.find((w: any) => w.hour === hour) || weatherData[0];
             
             const formattedData: WeatherData = {
               Weekend: weekend,

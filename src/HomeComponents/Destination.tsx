@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Title from './Title';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,7 +7,35 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination } from 'swiper/modules';
-import * as echarts from 'echarts';
+import dynamic from 'next/dynamic';
+
+// Mock data for charts
+const lineChartData = {
+  xAxis: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  series: [820, 932, 901, 934, 1290, 1330],
+};
+
+const barChartData = {
+  xAxis: ['Area 1', 'Area 2', 'Area 3', 'Area 4'],
+  series: [500, 600, 700, 800],
+};
+
+const pieChartData = {
+  series: [
+    { value: 400, name: 'Residential' },
+    { value: 335, name: 'Commercial' },
+    { value: 310, name: 'Industrial' },
+    { value: 234, name: 'Agriculture' },
+  ],
+};
+
+const scatterChartData = {
+  xAxis: ['20°C', '25°C', '30°C', '35°C', '40°C'],
+  series: [300, 400, 500, 700, 800],
+};
+
+// Dynamically import the chart component
+const ChartCard = dynamic(() => import('./ChartCard'), { ssr: false });
 
 const ElectricityStats = () => {
   return (
@@ -62,185 +90,6 @@ const ElectricityStats = () => {
       </div>
     </section>
   );
-};
-
-interface ChartCardProps {
-  chartType: string;
-  title: string;
-  data: any;
-}
-
-const ChartCard = ({ chartType, title, data }: ChartCardProps) => {
-  const chartRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (chartRef.current) {
-      const chartInstance = echarts.init(chartRef.current);
-      const chartOptions = getChartOptions(chartType, data);
-      chartInstance.setOption(chartOptions);
-      
-      // Clean up on unmount
-      return () => {
-        chartInstance.dispose();
-      };
-    }
-  }, [chartType, data]);
-
-  return (
-    <div className='bg-white text-black h-[500px] w-[340px] pb-4 rounded-3xl shadow-lg flex flex-col gap-4'>
-      <div className='p-6'>
-        <h3 className='font-bold text-lg'>{title}</h3>
-      </div>
-      <div ref={chartRef} className='h-[350px] px-4'></div>
-    </div>
-  );
-};
-
-// Function to get chart options based on the chart type
-const getChartOptions = (chartType: string, data: any) => {
-  switch (chartType) {
-    case 'line':
-      return {
-        tooltip: {
-          trigger: 'axis',
-        },
-        xAxis: {
-          type: 'category',
-          data: data.xAxis,
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        series: [
-          {
-            data: data.series,
-            type: 'line',
-            smooth: true,
-            itemStyle: {
-              color: '#FF6347', // Tomato color for line
-            },
-          },
-        ],
-        animationDuration: 2000,
-      };
-    case 'bar':
-      return {
-        tooltip: {
-          trigger: 'item',
-        },
-        xAxis: {
-          type: 'category',
-          data: data.xAxis,
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        series: [
-          {
-            data: data.series,
-            type: 'bar',
-            itemStyle: {
-              color: '#4682B4', // Steel Blue color for bars
-            },
-          },
-        ],
-        animationDuration: 2000,
-      };
-    case 'pie':
-      return {
-        tooltip: {
-          trigger: 'item',
-        },
-        series: [
-          {
-            type: 'pie',
-            radius: '50%',
-            data: data.series,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)',
-              },
-            },
-            itemStyle: {
-              borderColor: '#fff',
-              borderWidth: 2,
-            },
-          },
-        ],
-        animationDuration: 2000,
-      };
-    case 'scatter':
-      return {
-        tooltip: {
-          trigger: 'item',
-        },
-        xAxis: {
-          type: 'category',
-          data: data.xAxis,
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: {
-            lineStyle: { color: '#333' },
-          },
-        },
-        series: [
-          {
-            data: data.series,
-            type: 'scatter',
-            symbolSize: 10,
-            itemStyle: {
-              color: '#32CD32', // Lime Green color for scatter points
-            },
-          },
-        ],
-        animationDuration: 2000,
-      };
-    default:
-      return {};
-  }
-};
-
-// Mock data for charts
-const lineChartData = {
-  xAxis: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  series: [820, 932, 901, 934, 1290, 1330],
-};
-
-const barChartData = {
-  xAxis: ['Area 1', 'Area 2', 'Area 3', 'Area 4'],
-  series: [500, 600, 700, 800],
-};
-
-const pieChartData = {
-  series: [
-    { value: 400, name: 'Residential' },
-    { value: 335, name: 'Commercial' },
-    { value: 310, name: 'Industrial' },
-    { value: 234, name: 'Agriculture' },
-  ],
-};
-
-const scatterChartData = {
-  xAxis: ['20°C', '25°C', '30°C', '35°C', '40°C'],
-  series: [300, 400, 500, 700, 800],
 };
 
 export default ElectricityStats;

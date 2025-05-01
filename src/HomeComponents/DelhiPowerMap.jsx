@@ -1,9 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '@/css/map.css';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the map components with ssr: false
+const MapWithNoSSR = dynamic(
+  () => import('./MapComponent'),
+  { ssr: false }
+);
 
 // Updated data for Delhi electricity power plants
 const powerPlants = [
@@ -32,17 +37,6 @@ const DelhiPowerMap = () => {
 
   const totalCapacity = powerPlants.reduce((sum, plant) => sum + plant.capacity, 0);
   const operationalCapacity = powerPlants.filter(plant => plant.status === 'operational').reduce((sum, plant) => sum + plant.capacity, 0);
-
-  const getMarkerIcon = (type) => {
-    return L.divIcon({
-      className: 'custom-div-icon',
-      html: `<div style="background-color: ${getColor(type)}; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-               <span style="color: white; font-weight: bold; font-size: 16px;">${getInitial(type)}</span>
-             </div>`,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15],
-    });
-  };
 
   const getColor = (type) => {
     switch (type) {
@@ -118,34 +112,12 @@ const DelhiPowerMap = () => {
         </div>
         <div className="lg:w-2/3">
           <div className="bg-white p-2 rounded-lg shadow-lg" style={{ height: '600px' }}>
-            <MapContainer
-              key={mapKey}
-              center={[28.6139, 77.2090]}
-              zoom={11}
-              style={{ height: '100%', width: '100%' }}
-              zoomControl={false}
-            >
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              />
-              {filteredPlants.map((plant) => (
-                <Marker
-                  key={plant.id}
-                  position={[plant.lat, plant.lng]}
-                  icon={getMarkerIcon(plant.type)}
-                >
-                  <Popup className="custom-popup">
-                    <div className="text-center">
-                      <h3 className="font-semibold text-lg mb-2">{plant.name}</h3>
-                      <p className="text-sm"><span className="font-medium">Capacity:</span> {plant.capacity} MW</p>
-                      <p className="text-sm"><span className="font-medium">Type:</span> {plant.type}</p>
-                      <p className="text-sm"><span className="font-medium">Status:</span> <span className="capitalize">{plant.status}</span></p>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
+            <MapWithNoSSR 
+              mapKey={mapKey} 
+              filteredPlants={filteredPlants} 
+              getColor={getColor} 
+              getInitial={getInitial} 
+            />
           </div>
         </div>
       </div>

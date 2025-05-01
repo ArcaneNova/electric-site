@@ -7,10 +7,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
-  session,
 }: {
   children: React.ReactNode;
-  session: any; // Adjust type as needed
 }) {
   return (
     <html lang="en" className='overflow-x-hidden'>

@@ -5,8 +5,11 @@ import ClickOutside from "@/components/ClickOutside";
 import { signOut, useSession } from "next-auth/react";
 
 const DropdownUser = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { data: session } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  // Cast user to any to access custom properties
+  const user = session?.user as any;
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -17,17 +20,17 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {session ? session.user.name : "Guest"}
+            {session ? user?.name : "Guest"}
           </span>
           <span className="block text-xs">
-            {session ? session.user.role : "User"}
+            {session ? user?.role : "User"}
           </span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
         
           <Image
-          src={session?.user?.image ? session.user.image : "/images/user/user-01.png"}
+          src={user?.image ? user.image : "/images/user/user-01.png"}
             width={112}
             height={112}
             style={{ width: "auto", height: "auto" }}

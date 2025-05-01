@@ -15,5 +15,5 @@ export default async function DashboardPage() {
   // For example, fetching user data from the database
   // const userData = await fetchUserData(session.user.id);
 
-  return <DashboardClient user={session.user} />;
+  return <DashboardClient />;
 }
